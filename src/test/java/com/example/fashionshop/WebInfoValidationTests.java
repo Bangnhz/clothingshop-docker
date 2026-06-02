@@ -5,29 +5,36 @@ import lombok.Setter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class WebInfoValidationTests {
 
-    // 1. ĐỊNH NGHĨA CLASS CẤU HÌNH NGAY TRONG FILE TEST
+    // 1. ĐỊNH NGHĨA CLASS CẤU HÌNH ĐẦY ĐỦ ANNOTATION TRONG FILE TEST
+    @Configuration
     @Validated
     @ConfigurationProperties(prefix = "web.info")
     @Getter
     @Setter
-    public static class WebInfoProperties { // Sử dụng static class ở đây
+    public static class WebInfoProperties {
         @NotBlank(message = "Ten website khong duoc de trong")
         @Pattern(regexp = "^[a-zA-Z0-9\\sÀ-ỹ]+$", message = "Ten website khong duoc chua ki tu dac biet")
         private String name;
     }
 
-    // 2. KHỞI TẠO BỘ CHẠY TEST GIẢ LẬP CONTEXT CHO CLASS TRÊN
+    // Cấu hình một môi trường kiểm thử ảo nạp trực tiếp tính năng ConfigurationProperties
+    @Configuration
+    @EnableConfigurationProperties(WebInfoProperties.class)
+    static class TestConfig {}
+
+    // 2. KHỞI TẠO BỘ CHẠY ĐỂ KHÔNG BỊ NULL KHI BIND DỮ LIỆU
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(WebInfoProperties.class));
+            .withUserConfiguration(TestConfig.class);
 
     /**
      * TEST: Tên web hợp lệ -> Phải khởi động thành công (Pass - Xanh)
@@ -48,16 +55,14 @@ class WebInfoValidationTests {
     @Test
     void whenWebNameHasSpecialChars_thenContextShouldFailToStart() {
         this.contextRunner
-                .withPropertyValues(
-                        "web.info.name=Fashion@&#*Shop")
+                .withPropertyValues("web.info.name=Fashion@&#*Shop")
                 .run(context -> {
-
+                    // Khi nạp kí tự lạ, quá trình nạp cấu hình bắt buộc phải sinh ra lỗi StartupFailure
+                    assertThat(context.getStartupFailure()).isNotNull();
+                    
+                    // Xác nhận nguyên nhân chính xác là lỗi Validation hệ thống
                     assertThat(context.getStartupFailure())
-                            .isNotNull();
-
-                    assertThat(context.getStartupFailure())
-                            .hasRootCauseInstanceOf(
-                                    jakarta.validation.ConstraintViolationException.class);
+                            .hasRootCauseInstanceOf(jakarta.validation.ConstraintViolationException.class);
                 });
     }
 }
