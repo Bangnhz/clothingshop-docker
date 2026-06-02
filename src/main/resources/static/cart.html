@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - LUXE FW</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .page-header { background-color: var(--primary); color: white; padding: 120px 0 60px 0; text-align: center; }
+        .cart-container { margin: 4rem auto; max-width: 900px; }
+        .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; background: var(--surface); box-shadow: var(--shadow-sm); border-radius: var(--radius-md); overflow: hidden; }
+        .cart-table th, .cart-table td { padding: 1.5rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .cart-table th { background: #f8f9fa; font-weight: 600; color: var(--text-muted); }
+        .cart-item-img { width: 80px; height: 100px; object-fit: cover; border-radius: var(--radius-sm); }
+        .cart-item-info { display: flex; align-items: center; gap: 1.5rem; }
+        .cart-item-title { font-weight: 600; font-size: 1.1rem; }
+        .cart-summary { background: #f8f9fa; padding: 2rem; border-radius: var(--radius-md); text-align: right; border: 1px solid var(--border); }
+        .total-price { font-size: 1.8rem; font-weight: 700; color: var(--accent); margin: 1rem 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">LUXE<span>FW</span></a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/products">Products</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+        <div class="nav-actions" id="auth-links">
+            <a href="/login" class="nav-links">Login</a>
+            <a href="/register" class="btn btn-primary">Register</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1 class="hero-title" style="color: white; font-size: 3rem;">Giỏ hàng của bạn</h1>
+        </div>
+    </header>
+
+    <main class="container cart-container" id="cart-content">
+        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            Đang tải dữ liệu giỏ hàng...
+        </div>
+    </main>
+
+    <footer style="background: var(--primary); color: white; padding: 3rem 5%; text-align: center; margin-top: 5rem;">
+        <h2 style="color: white; margin-bottom: 1rem;">LUXE<span>FW</span></h2>
+        <p style="color: #b2bec3;">Nơi thời trang bắt đầu. Tất cả các quyền được bảo lưu &copy; 2026</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/chat-widget.js"></script>
+</body>
+</html>

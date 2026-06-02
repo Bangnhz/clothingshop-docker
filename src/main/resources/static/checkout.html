@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - LUXE FW</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .checkout-container { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 3rem; margin: 4rem auto; max-width: 1200px; padding: 0 2rem; }
+        .checkout-section { background: white; padding: 2.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+        .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid var(--border); padding-bottom: 0.8rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.6rem; font-weight: 600; font-size: 0.95rem; color: var(--text-main); }
+        .form-group input, .form-group textarea { width: 100%; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem; outline: none; transition: border-color 0.3s; font-family: inherit; }
+        .form-group input:focus { border-color: var(--accent); }
+        .full-width { grid-column: span 2; }
+
+        .order-summary-item { display: flex; gap: 1rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f0f0f0; }
+        .order-summary-item img { width: 60px; height: 80px; object-fit: cover; border-radius: 4px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 1.05rem; }
+        .summary-total { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-top: 1.5rem; border-top: 2px solid var(--border); padding-top: 1rem; }
+
+        .payment-methods { margin-top: 2rem; }
+        .payment-option { display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 1rem; cursor: pointer; transition: all 0.3s; }
+        .payment-option:hover { background: #f8f9fa; }
+        .payment-option.active { border-color: var(--accent); background: #fffcfd; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/" class="logo">LUXE<span>FW</span></a>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/about">About</a></li>
+    </ul>
+    <div class="nav-actions" id="auth-links"></div>
+</nav>
+
+<main class="checkout-container">
+    <!-- Left: Shipping Info -->
+    <div class="checkout-section">
+        <h2 class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            THÔNG TIN GIAO HÀNG
+        </h2>
+        <form id="checkout-form">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Họ và tên</label>
+                    <input type="text" id="fullname" placeholder="Nhập tên người nhận" required>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="tel" id="phone" placeholder="Nhập số điện thoại" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="Nhập địa chỉ email" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Địa chỉ nhận hàng</label>
+                    <input type="text" id="address" placeholder="Số nhà, tên đường, phường/xã..." required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Ghi chú đơn hàng (Tùy chọn)</label>
+                    <textarea id="notes" rows="3" placeholder="Ghi chú về thời gian giao hàng, chỉ dẫn địa chỉ..."></textarea>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 3rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                PHƯƠNG THỨC THANH TOÁN
+            </h2>
+            <div class="payment-methods">
+                <div class="payment-option active" onclick="selectPayment('COD')">
+                    <input type="radio" name="payment" value="COD" checked>
+                    <span>Thanh toán khi nhận hàng (COD)</span>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- Right: Order Summary -->
+    <div class="checkout-section" style="height: fit-content; position: sticky; top: 100px;">
+        <h2 class="section-title">ĐƠN HÀNG CỦA BẠN</h2>
+        <div id="checkout-items">
+            <!-- JS will populate -->
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <div class="summary-row">
+                <span>Tạm tính</span>
+                <span id="subtotal">0 đ</span>
+            </div>
+            <div class="summary-row">
+                <span>Phí vận chuyển</span>
+                <span style="color: #27ae60; font-weight: 600;" id="checkout-shipping">30.000 đ</span>
+            </div>
+            <div class="summary-row" style="margin-top: 1rem; border-top: 1px dashed #f0f0f0; padding-top: 1rem;">
+                <div style="display: flex; gap: 0.5rem; width: 100%;">
+                    <input type="text" id="voucher-code" placeholder="Mã giảm giá (VD: LUXE5)" style="flex: 1; padding: 0.6rem; border: 1px solid var(--border); border-radius: 4px; outline: none;">
+                    <button class="btn btn-outline" style="padding: 0.6rem 1rem;" onclick="applyVoucher()">Áp dụng</button>
+                </div>
+            </div>
+            <div class="summary-row" style="margin-top: 1rem;">
+                <span>Giảm giá</span>
+                <span style="color: #e74c3c; font-weight: 600;" id="checkout-discount">0 đ</span>
+            </div>
+            <div class="summary-total">
+                <div class="summary-row" style="margin-bottom: 0;">
+                    <span>TỔNG CỘNG</span>
+                    <span id="total-amount">0 đ</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; padding: 1.5rem; font-size: 1.2rem; border-radius: var(--radius-sm); margin-top: 2rem; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);" onclick="placeOrder()">
+            XÁC NHẬN ĐẶT HÀNG
+        </button>
+        <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">Bằng cách đặt hàng, bạn đồng ý với các điều khoản dịch vụ của chúng tôi.</p>
+    </div>
+</main>
+
+<footer style="background: var(--primary); color: white; padding: 3rem 5%; text-align: center;">
+    <h2 style="color: white; margin-bottom: 1rem;">LUXE<span>FW</span></h2>
+    <p style="color: #b2bec3;">Nơi thời trang bắt đầu. Tất cả các quyền được bảo lưu &copy; 2026</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/chat-widget.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        loadCheckout();
+
+        // Pre-fill user info if logged in
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            try {
+                const profileRes = await fetchAPI('/user/profile');
+                if (profileRes && profileRes.data) {
+                    const user = profileRes.data;
+                    document.getElementById('fullname').value = user.fullName || '';
+                    document.getElementById('email').value = user.email || '';
+                    document.getElementById('phone').value = user.phone || '';
+                    if (user.address) {
+                        const addr = user.address;
+                        const parts = [addr.addressLine, addr.ward, addr.district, addr.city].filter(Boolean);
+                        document.getElementById('address').value = parts.join(', ');
+                    }
+                }
+            } catch(e) { console.error('Failed to load user profile for checkout', e); }
+        }
+    });
+
+    let currentDiscountValue = 0;
+    let appliedVoucher = "";
+
+    async function loadCheckout() {
+        const token = localStorage.getItem('jwtToken');
+        let cartItems = [];
+        let total = 0;
+
+        if (token) {
+            try {
+                const res = await fetchAPI('/user/cart');
+                cartItems = res.data.items || [];
+            } catch (e) { console.error(e); }
+        } else {
+            cartItems = JSON.parse(localStorage.getItem('guestCart') || '[]');
+        }
+
+        if (cartItems.length === 0) {
+            window.location.href = 'cart.html';
+            return;
+        }
+
+        const container = document.getElementById('checkout-items');
+        container.innerHTML = '';
+
+        cartItems.forEach(item => {
+            const prodVariant = item.productVariantResponse || {};
+            const prodInfo = prodVariant.productResponse || {};
+            const price = prodInfo.price || 0;
+            total += price * item.quantity;
+
+            let mainImg = "https://via.placeholder.com/150";
+            if (prodInfo.images && prodInfo.images.length > 0) {
+                mainImg = window.getImageUrl(prodInfo.images[0].imageUrl);
+            }
+
+            container.innerHTML += `
+                <div class="order-summary-item">
+                    <img src="${mainImg}" alt="${prodInfo.name}">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600;">${prodInfo.name}</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">Size: ${prodVariant.size?prodVariant.size.name:'FS'} | SL: ${item.quantity}</div>
+                        <div style="font-weight: 600; color: var(--accent); margin-top: 0.2rem;">${formatPrice(price * item.quantity)}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('subtotal').innerText = formatPrice(total);
+
+        // Auto fetch discount if user is logged in
+        if (token) {
+            try {
+                const dRes = await fetchAPI('/user/discount', { method: 'POST' });
+                // Usually returns a number like 5, 8, 10
+                if (dRes.data > 0) {
+                    currentDiscountValue = total * (dRes.data / 100);
+                    document.getElementById('checkout-discount').innerText = "- " + formatPrice(currentDiscountValue);
+                    showToast(`Áp dụng giảm giá hạng thành viên ${dRes.data}%`, 'success');
+                }
+            } catch(e) {}
+        }
+
+        updateTotalDisplay(total);
+    }
+
+    window.applyVoucher = function() {
+        const code = document.getElementById('voucher-code').value.trim().toUpperCase();
+        if (!code) return;
+        const subtotalText = document.getElementById('subtotal').innerText.replace(/[^\d]/g, '');
+        const total = parseInt(subtotalText) || 0;
+
+        if (code === 'LUXE5') {
+            currentDiscountValue = total * 0.05;
+            appliedVoucher = code;
+            showToast('Áp dụng mã giảm giá 5% thành công!', 'success');
+        } else if (code === 'LUXE10') {
+            currentDiscountValue = total * 0.10;
+            appliedVoucher = code;
+            showToast('Áp dụng mã giảm giá 10% thành công!', 'success');
+        } else {
+            showToast('Mã giảm giá không hợp lệ', 'error');
+            return;
+        }
+        document.getElementById('checkout-discount').innerText = "- " + formatPrice(currentDiscountValue);
+        updateTotalDisplay(total);
+    }
+
+    function updateTotalDisplay(subtotal) {
+        const shipping = 30000;
+        const finalTotal = subtotal + shipping - currentDiscountValue;
+        document.getElementById('total-amount').innerText = formatPrice(finalTotal > 0 ? finalTotal : 0);
+    }
+
+    window.selectPayment = function(method) {
+        document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+        const active = Array.from(document.querySelectorAll('.payment-option')).find(opt => opt.innerText.includes(method));
+        if (active) active.classList.add('active');
+        const radio = active.querySelector('input');
+        if (radio) radio.checked = true;
+    }
+
+    async function placeOrder() {
+        const fullname = document.getElementById('fullname').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const notes = document.getElementById('notes').value.trim();
+
+        if (!fullname || !phone || !email || !address) {
+            showToast('Vui lòng điền đầy đủ thông tin giao hàng', 'warning');
+            return;
+        }
+
+        const token = localStorage.getItem('jwtToken');
+        let cartItems = [];
+
+        if (token) {
+            try {
+                const res = await fetchAPI('/user/cart');
+                cartItems = res.data.items || [];
+            } catch (e) {
+                showToast('Lỗi tải giỏ hàng', 'error');
+                return;
+            }
+        } else {
+            cartItems = JSON.parse(localStorage.getItem('guestCart') || '[]');
+        }
+
+        const orderPayload = {
+            email: email,
+            phone: phone,
+            isGuest: !token,
+            shippingFee: 30000,
+            notes: notes,
+            paymentMethod: document.querySelector('input[name="payment"]:checked').value,
+            voucherCode: appliedVoucher,
+            discountAmount: currentDiscountValue,
+            subtotal: cartItems.reduce((sum, item) => {
+                const price = (item.productVariantResponse && item.productVariantResponse.productResponse)
+                             ? item.productVariantResponse.productResponse.price
+                             : 0;
+                return sum + (price * item.quantity);
+            }, 0),
+            totalPrice: Math.max(0, cartItems.reduce((sum, item) => {
+                const price = (item.productVariantResponse && item.productVariantResponse.productResponse)
+                             ? item.productVariantResponse.productResponse.price
+                             : 0;
+                return sum + (price * item.quantity);
+            }, 0) + 30000 - currentDiscountValue),
+            orderItems: cartItems.map(item => {
+                const variantId = item.variantId || (item.productVariantResponse ? item.productVariantResponse.id : null);
+                const price = (item.productVariantResponse && item.productVariantResponse.productResponse)
+                             ? item.productVariantResponse.productResponse.price
+                             : 0;
+                return {
+                    variant: { id: variantId },
+                    quantity: item.quantity,
+                    price: price
+                };
+            })
+        };
+
+        try {
+            // Post order - endpoint from OrderController: @PostMapping
+            const res = await fetchAPI('/order', {
+                method: 'POST',
+                body: JSON.stringify(orderPayload)
+            });
+
+            showToast('Đặt hàng thành công!', 'success');
+
+            // Clear cart
+            if (!token) {
+                localStorage.removeItem('guestCart');
+            }
+
+            // Redirect to success or tracking
+            setTimeout(() => {
+                const nextUrl = token ? 'orders.html' : `track-order.html?email=${email}&phone=${phone}`;
+                window.location.href = nextUrl;
+            }, 1500);
+
+        } catch (err) {
+            console.error(err);
+            showToast('Có lỗi xảy ra khi đặt hàng', 'error');
+        }
+    }
+</script>
+</body>
+</html>
