@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - LUXE FW</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .product-detail-container { display: flex; gap: 4rem; margin: 6rem auto; }
+        .product-gallery { flex: 1; display: flex; gap: 1rem; }
+        .thumbnail-list { display: flex; flex-direction: column; gap: 1rem; }
+        .thumbnail { width: 80px; height: 100px; object-fit: cover; border-radius: var(--radius-sm); cursor: pointer; border: 2px solid transparent; }
+        .thumbnail.active { border-color: var(--primary); }
+        .main-image-container { flex: 1; }
+        .main-image { width: 100%; height: auto; border-radius: var(--radius-md); object-fit: cover; }
+        .product-info-panel { flex: 1; }
+        .pd-title { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .pd-sku { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .pd-price { font-size: 2rem; color: var(--accent); font-weight: 700; margin-bottom: 2rem; }
+        .pd-desc { line-height: 1.6; color: #636e72; margin-bottom: 2rem; }
+        .options-group { margin-bottom: 2rem; }
+        .options-title { font-weight: 600; margin-bottom: 1rem; display: block; }
+        .size-btn { padding: 0.5rem 1rem; border: 1px solid var(--border); background: white; cursor: pointer; border-radius: var(--radius-sm); margin-right: 0.5rem; font-family: inherit; }
+        .size-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .action-group { display: flex; gap: 1rem; margin-top: 2rem; }
+        .qty-input { width: 70px; padding: 0.8rem; border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: center; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">LUXE<span>FW</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+        <div class="nav-actions" id="auth-links">
+            <a href="login.html" class="nav-links">Login</a>
+            <a href="register.html" class="btn btn-primary">Register</a>
+        </div>
+    </nav>
+
+    <main class="container product-detail-container" id="product-detail-view">
+        <div style="text-align: center; width: 100%;">
+            <h2>Đang tải chi tiết sản phẩm...</h2>
+        </div>
+    </main>
+
+    <footer style="background: var(--primary); color: white; padding: 3rem 5%; text-align: center; margin-top: 5rem;">
+        <h2 style="color: white; margin-bottom: 1rem;">LUXE<span>FW</span></h2>
+        <p style="color: #b2bec3;">Nơi thời trang bắt đầu. Tất cả các quyền được bảo lưu &copy; 2026</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/chat-widget.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const container = document.getElementById('product-detail-view');
+
+            if (!id) {
+                container.innerHTML = '<h2>Không tìm thấy ID sản phẩm / Product ID not found</h2>';
+                return;
+            }
+
+            try {
+                // To display nicely, we quickly fetch everything. In real project we should backend /api/products/{id}
+                const res = await fetchAPI('/products');
+                let product = res.data.find(p => p.id == id || p.name == id);
+                
+                if(!product && res.data.length > 0) {
+                    product = res.data[0]; // fallback
+                }
+
+                if(product) {
+                    let images = product.images || [];
+                    let mainImg = "https://via.placeholder.com/400x500";
+                    let thumbnailsHtml = '';
+                    
+                    if (images.length > 0) {
+                        let mainObj = images.find(i => i.isMain) || images[0];
+                        mainImg = window.getImageUrl(mainObj.imageUrl);
+                        
+                        images.forEach((img, idx) => {
+                            let iUrl = window.getImageUrl(img.imageUrl);
+                            thumbnailsHtml += `<img src="${iUrl}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="changeMainImage('${iUrl}', this)">`;
+                        });
+                    }
+
+                    let variants = product.productVariants || [];
+                    let sizesHtml = variants.map((v, i) => `<button class="size-btn ${i===0?'active':''}" onclick="selectSize(this)" data-variant="${v.id}">${v.size ? v.size.name : v.id}</button>`).join('');
+
+                    container.innerHTML = `
+                        <div class="product-gallery">
+                            <div class="thumbnail-list">
+                                ${thumbnailsHtml}
+                            </div>
+                            <div class="main-image-container">
+                                <img src="${mainImg}" alt="${product.name}" class="main-image" id="main-product-img">
+                            </div>
+                        </div>
+                        
+                        <div class="product-info-panel">
+                            <h1 class="pd-title">${product.name}</h1>
+                            <div class="pd-sku">SKU: LUXE-${product.id || '001'}</div>
+                            <div class="pd-price" id="display-price">${formatPrice(product.price)}</div>
+                            <p class="pd-desc">${product.description || 'Chưa có mô tả cho sản phẩm này.'}</p>
+                            
+                            <div class="options-group">
+                                <span class="options-title">Kích cỡ / Size</span>
+                                <div>
+                                    ${sizesHtml}
+                                </div>
+                            </div>
+                            
+                            <div class="action-group">
+                                <input type="number" id="qty" class="qty-input" value="1" min="1">
+                                <button class="btn btn-primary" style="flex: 1; padding: 1rem;" onclick="addToCart(${product.id})">Thêm vào giỏ hàng</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                container.innerHTML = '<h2>Lỗi tải dữ liệu sản phẩm</h2>';
+            }
+        });
+
+        function changeMainImage(url, thumnailEl) {
+            document.getElementById('main-product-img').src = url;
+            document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('active'));
+            thumnailEl.classList.add('active');
+        }
+
+        function selectSize(btn) {
+            document.querySelectorAll('.size-btn').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        async function addToCart(productId) {
+            const token = localStorage.getItem('jwtToken');
+            if(!token) {
+                showToast("Bạn cần đăng nhập để mua hàng!", "error");
+                setTimeout(() => window.location.href="login.html", 1500);
+                return;
+            }
+            
+            const activeSizeBtn = document.querySelector('.size-btn.active');
+            let variantId = 1;
+            if(activeSizeBtn) {
+                variantId = activeSizeBtn.getAttribute('data-variant');
+            }
+            
+            const qty = document.getElementById('qty').value;
+            
+            try {
+                // Post to /api/user/cart/items?productId=x&variantId=x&quantity=x
+                showToast("Đang thêm vào giỏ hàng...", "success");
+            } catch(e) {
+                showToast("Vui lòng thử lại sau.", "error");
+            }
+        }
+    </script>
+</body>
+</html>

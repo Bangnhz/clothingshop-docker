@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - LUXE FW Kids</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .section-title { text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: var(--primary); }
+        .section-padding { padding: 5rem 0; }
+        .banner { background-color: var(--primary); color: white; border-radius: var(--radius-lg); padding: 4rem; text-align: center; margin: 4rem 0; }
+        .banner h2 { font-size: 2.5rem; margin-bottom: 1rem; color: white;}
+        /* Chat Widget Styles */
+        .chat-widget-btn { position: fixed; bottom: 30px; right: 30px; background: #6c5ce7; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(108,92,231,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .chat-widget-box { position: fixed; bottom: 100px; right: 30px; width: 320px; background: white; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); border: 1px solid var(--border); z-index: 1000; display: none; flex-direction: column; overflow: hidden; }
+        .chat-header { background: #6c5ce7; color: white; padding: 1rem; font-weight: 600; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; }
+        .chat-body { padding: 1rem; height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; background: #f8f9fa; }
+        .chat-msg { background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #eee; font-size: 0.9rem; max-width: 85%; }
+        .chat-msg.user { background: #e3e0fb; align-self: flex-end; }
+        .chat-footer { padding: 0.8rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; background: white; }
+        .chat-footer input { flex: 1; padding: 0.6rem; border: 1px solid var(--border); border-radius: 20px; outline: none; font-size: 0.9rem; }
+        .chat-footer button { border: none; background: #6c5ce7; color: white; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">LUXE<span>FW</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+        <div class="nav-actions" id="auth-links">
+            <!-- JavaScript handles rendering here -->
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 90vh; display: flex; align-items: stretch; padding: 0; margin-top: 70px; background: #fff;">
+        <!-- Left Side: Minimalist Text -->
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 6rem 8%; border-right: 1px solid #f0f0f0;">
+            <span class="hero-subtitle">Mùa Thu Trắng</span>
+            <h1 class="hero-title">Đơn giản<br>Hoàn mỹ</h1>
+            <p class="hero-desc">Định hình phong cách thời trang đương đại với những đường cắt tối giản. Sự sành điệu được làm nên từ chất liệu tinh khiết nhất.</p>
+            
+            <div style="display: flex; gap: 1.5rem;">
+                <a href="products.html" style="background: #111; color: white; text-decoration: none; font-weight: 600; font-size: 1.05rem; padding: 1.3rem 3.5rem; text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s ease;">Khám phá</a>
+            </div>
+        </div>
+
+        <!-- Right Side: Editorial Image -->
+        <div style="flex: 1; height: auto;">
+            <div style="width: 100%; height: 100%; background: url('images/hero_fashion_fresh.png') center/cover no-repeat;"></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- NEW ARRIVALS -->
+        <section id="new-arrivals">
+            <div class="banner" style="background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url('images/new_arrivals_bg.png') center/cover; padding: 12rem 5%; border-radius: 0;">
+                <div class="container" style="text-align: center;">
+                    <h2 style="text-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 3.5rem; color: white;">Sản Phẩm Mới Nhất ✨</h2>
+                    <p style="color: white; font-size: 1.3rem; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">Đón đầu xu hướng thời trang trẻ thơ với những thiết kế độc quyền mới nhất vừa ra mắt tuần này.</p>
+                    <a href="products.html" class="btn btn-primary" style="margin-top: 2.5rem; background: white; color: #6c5ce7; border: none; font-size: 1.1rem; padding: 1rem 2.5rem;">Cập Nhật Bộ Sưu Tập</a>
+                </div>
+            </div>
+            <div class="container section-padding">
+                <div class="grid-products" id="new-products">
+                    <!-- Fallback/Placeholder while loading -->
+                    <p style="text-align: center; width: 100%;">Đang tải sản phẩm...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOT PRODUCTS: Slider Banner -->
+        <section id="hot-slider" class="hot-bg-slider" style="padding: 16rem 0 20rem 0; margin-top: 4rem; text-align: center;">
+            <div class="container">
+                <h2 style="color: white; font-size: 4.5rem; text-shadow: 0 4px 15px rgba(0,0,0,0.6); margin-bottom: 0.5rem; letter-spacing: 0;">Mặt Hàng Hot 🔥</h2>
+                <p style="color: white; font-size: 1.6rem; text-shadow: 0 2px 8px rgba(0,0,0,0.5); font-weight: 600;">Khám phá những xu hướng bùng nổ nhất tuần này</p>
+            </div>
+        </section>
+
+        <!-- HOT PRODUCTS: Grid Content -->
+        <section id="hot-products" class="container" style="background-color: white; padding: 4rem 3rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); position: relative; z-index: 10; margin-top: -160px; margin-bottom: 4rem;">
+            <div class="grid-products" id="hot-products-grid">
+                <!-- JS will populate -->
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="products.html" class="btn btn-outline" style="border-width: 2px; border-color: var(--accent); color: var(--accent); font-weight: 700; padding: 1rem 3rem; font-size: 1.1rem; border-radius: 30px;">XEM TẤT CẢ HOT ITEMS</a>
+            </div>
+        </section>
+
+        <!-- GIRLS COLLECTION -->
+        <section id="girls" style="margin-top: 4rem;">
+            <div class="banner" style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('images/banner_girls.png') center/cover; padding: 12rem 5%; border-radius: 0;">
+                <div class="container" style="text-align: center;">
+                    <h2 style="text-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 3.5rem; color: white;">Các Cô Nàng Điệu Đà 🎀</h2>
+                    <p style="color: white; font-size: 1.3rem; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">Váy công chúa, Phụ kiện xinh xắn dành riêng cho bé gái.</p>
+                    <a href="products.html" class="btn btn-primary" style="margin-top: 2.5rem; background: white; color: #ff6b81; border: none; font-size: 1.1rem; padding: 1rem 2.5rem;">Khám phá ngay</a>
+                </div>
+            </div>
+            <div class="container section-padding">
+                <div class="grid-products" id="girls-products">
+                    <!-- JS will populate -->
+                </div>
+            </div>
+        </section>
+
+        <!-- BOYS COLLECTION -->
+        <section id="boys">
+            <div class="banner" style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('images/banner_boys.png') center/cover; padding: 12rem 5%; border-radius: 0;">
+                <div class="container" style="text-align: center;">
+                    <h2 style="text-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 3.5rem; color: white;">Bé Trai Cá Tính 😎</h2>
+                    <p style="color: white; font-size: 1.3rem; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">Sơ mi, quần jean mạnh mẽ và năng động cho bé trai.</p>
+                    <a href="products.html" class="btn btn-primary" style="margin-top: 2.5rem; background: white; color: #1e90ff; border: none; font-size: 1.1rem; padding: 1rem 2.5rem;">Xem bộ sưu tập</a>
+                </div>
+            </div>
+            <div class="container section-padding">
+                <div class="grid-products" id="boys-products">
+                    <!-- JS will populate -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background: var(--primary); color: white; padding: 3rem 5%; text-align: center; margin-top: 5rem;">
+        <h2 style="color: white; margin-bottom: 1rem;">LUXE<span>FW</span></h2>
+        <p style="color: #b2bec3;">Nơi thời trang bắt đầu. Tất cả các quyền được bảo lưu &copy; 2026</p>
+    </footer>
+
+    <!-- Chat Widget HTML -->
+    <button class="chat-widget-btn" onclick="toggleChat()" title="Chat cùng tư vấn viên">💬</button>
+    <div class="chat-widget-box" id="chat-box">
+        <div class="chat-header">
+            <span>Tư vấn LUXE FW</span>
+            <span style="cursor: pointer; font-size: 1.2rem;" onclick="toggleChat()">&times;</span>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-msg">Xin chào! Chúng tôi có thể giúp gì cho bạn?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chat-input" placeholder="Nhập câu hỏi..." onkeypress="if(event.key==='Enter') sendChat()">
+            <button onclick="sendChat()">➤</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/products.js"></script>
+    <script>
+        // Fetch products and populate sections
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetchAPI('/products');
+                const products = res.data || [];
+                
+                if (products.length > 0) {
+                    // Populate New Arrivals
+                    renderProducts(products.slice(0,4), document.getElementById('new-products'));
+                    
+                    // Populate Hot (Reverse to look different)
+                    const reversed = [...products].reverse();
+                    renderProducts(reversed.slice(0,4), document.getElementById('hot-products-grid'));
+                    
+                    // Populate Girls
+                    renderProducts(products.filter(p => p.name.toLowerCase().includes('gái') || p.name.toLowerCase().includes('dress') || p.categoryId == 3 || p.name.toLowerCase().includes('baby')).slice(0,4), document.getElementById('girls-products'));
+                    
+                    // Populate Boys
+                    renderProducts(products.filter(p => !p.name.toLowerCase().includes('gái') && !p.name.toLowerCase().includes('dress')).slice(0,4), document.getElementById('boys-products'));
+                } else {
+                    document.querySelectorAll('.grid-products').forEach(el => el.innerHTML = '<p style="text-align:center;width:100%;">Trống</p>');
+                }
+            } catch (err) {
+                console.error(err);
+                document.querySelectorAll('.grid-products').forEach(el => el.innerHTML = '<p style="text-align:center;width:100%;color:red;">Lỗi tải sản phẩm</p>');
+            }
+        });
+
+        // Chat Widget Script
+        function toggleChat() {
+            const box = document.getElementById('chat-box');
+            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        async function sendChat() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const body = document.getElementById('chat-body');
+            body.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+            input.value = '';
+            body.scrollTop = body.scrollHeight;
+
+            try {
+                const res = await fetchAPI('/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: msg })
+                });
+                const reply = res.data && res.data.reply ? res.data.reply : 'Cảm ơn bạn! Chúng tôi đã ghi nhận.';
+                body.innerHTML += `<div class="chat-msg">${reply}</div>`;
+                body.scrollTop = body.scrollHeight;
+            } catch(e) {
+                body.innerHTML += `<div class="chat-msg">Lỗi kết nối. Vui lòng thử lại sau!</div>`;
+                body.scrollTop = body.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
