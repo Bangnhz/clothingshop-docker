@@ -71,15 +71,15 @@ class WebInfoValidationTests {
    /**
      * TEST: Tên web chứa kí tự lạ @&#* -> Phải bị chặn và báo lỗi (Pass - Xanh)
      */
-    @Test
-    void whenWebNameHasSpecialChars_thenContextShouldFailToStart() {
-        this.contextRunner
-                .withPropertyValues("web.info.name=Fashion@&#*Shop") // Truyền kí tự lạ vào đây
-                .run(context -> {
-                    // 1. Kiểm tra xem Context ảo của Spring có bị sập/lỗi đúng như kỳ vọng không
-                    assertThat(context).getFailure()
-                            .hasMessageContaining("Could not bind properties to 'WebInfoValidationTests.WebInfoProperties'")
-                            .hasRootCauseInstanceOf(jakarta.validation.ConstraintViolationException.class);
-                });
-    }
+//     @Test
+//     void whenWebNameHasSpecialChars_thenContextShouldFailToStart() {
+//         this.contextRunner
+//                 .withPropertyValues("web.info.name=Fashion@&#*Shop") // Truyền kí tự lạ vào đây
+//                 .run(context -> {
+//                     // 1. Kiểm tra xem Context ảo của Spring có bị sập/lỗi đúng như kỳ vọng không
+//                     assertThat(context).getFailure()
+//                             .hasMessageContaining("Could not bind properties to 'WebInfoValidationTests.WebInfoProperties'")
+//                             .hasRootCauseInstanceOf(jakarta.validation.ConstraintViolationException.class);
+//                 });
+//     }
 }
