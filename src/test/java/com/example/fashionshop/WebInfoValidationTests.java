@@ -68,19 +68,18 @@ class WebInfoValidationTests {
 /**
      * TEST: Tên web chứa kí tự lạ @&#* -> Phải bị chặn và báo lỗi (Pass - Xanh)
      */
+   /**
+     * TEST: Tên web chứa kí tự lạ @&#* -> Phải bị chặn và báo lỗi (Pass - Xanh)
+     */
     @Test
     void whenWebNameHasSpecialChars_thenContextShouldFailToStart() {
-        // Sử dụng AssertJ để khẳng định rằng đoạn code bên dưới CHẮC CHẮN phải ném ra ngoại lệ sập ứng dụng
-        org.assertj.core.api.Assertions.assertThatExceptionOfType(Exception.class)
-                .isThrownBy(() -> {
-                    this.contextRunner
-                            .withPropertyValues("web.info.name=Fashion@&#*Shop") // Truyền kí tự lạ
-                            .run(context -> {
-                                // Nếu hệ thống không sập mà lọt được vào tận trong này, tức là bộ Validator bị hỏng!
-                                org.junit.jupiter.api.Assertions.fail("Validator khong hoat dong! No da bo qua ki tu la.");
-                            });
-                })
-                // Kiểm tra xem lỗi ném ra có phải do quá trình bind thuộc tính 'web.info' hay không
-                .withMessageContaining("web.info");
+        this.contextRunner
+                .withPropertyValues("web.info.name=Fashion@&#*Shop") // Truyền kí tự lạ vào đây
+                .run(context -> {
+                    // 1. Kiểm tra xem Context ảo của Spring có bị sập/lỗi đúng như kỳ vọng không
+                    assertThat(context).getFailure()
+                            .hasMessageContaining("Could not bind properties to 'WebInfoValidationTests.WebInfoProperties'")
+                            .hasRootCauseInstanceOf(jakarta.validation.ConstraintViolationException.class);
+                });
     }
 }
