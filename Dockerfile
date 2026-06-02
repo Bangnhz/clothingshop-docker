@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM eclipse-temurin:17-jdk-jammy as base
+FROM eclipse-temurin:21-jdk-jammy as base
 WORKDIR /build
 COPY --chmod=0755 mvnw mvnw
 COPY .mvn/ .mvn/
@@ -33,23 +33,20 @@ FROM package as extract
 WORKDIR /build
 RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
 
-# Giai đoạn DEVELOPMENT (Dành cho bạn lập trình và Debug)
-FROM extract as development
-WORKDIR /build
-COPY --from=extract /build/target/extracted/dependencies/. ./
-COPY --from=extract /build/target/extracted/spring-boot-loader/. ./
-COPY --from=extract /build/target/extracted/snapshot-dependencies/. ./
-COPY --from=extract /build/target/extracted/application/. ./
-# Cấu hình mở cổng Debug 8000 và kết nối từ bên ngoài (*)
-ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000"
-CMD [ "java", "-Dspring.profiles.active=mysql", "org.springframework.boot.loader.launch.JarLauncher" ]
-
-# Giai đoạn FINAL (Dành cho chạy thực tế)
-FROM eclipse-temurin:17-jre-jammy AS final
+# Giai đoạn FINAL (Dành cho chạy thực tế trên Render)
+FROM eclipse-temurin:21-jre-jammy AS final
 WORKDIR /app
+
+# 1. Sao chép các layer Spring Boot đã được giải nén
 COPY --from=extract /build/target/extracted/dependencies/ ./
 COPY --from=extract /build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract /build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract /build/target/extracted/application/ ./
+
+# 2. QUAN TRỌNG: Sao chép thư mục giao diện frontend vào trong Container chạy thực tế
+COPY frontend/ ./frontend/
+
 EXPOSE 8080
-ENTRYPOINT [ "java", "-Dspring.profiles.active=mysql", "org.springframework.boot.loader.launch.JarLauncher" ]
+
+# 3. Chạy với profile mặc định (đã tích hợp H2 database, sendgrid, openai)
+ENTRYPOINT [ "java", "org.springframework.boot.loader.launch.JarLauncher" ]
