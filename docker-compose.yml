@@ -1,0 +1,50 @@
+services:
+  server:
+    build:
+      context: .
+      target: development # Ra lệnh build giai đoạn development để debug
+    ports:
+      - "8080:8080"
+      - "8000:8000" # Cổng để kết nối Debugger từ VS Code
+    depends_on:
+      mysql:
+        condition: service_healthy # Đợi MySQL khỏe mạnh mới chạy Server
+    environment:
+      - SPRING_PROFILES_ACTIVE=mysql
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/petclinic
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+    restart: on-failure
+    develop:
+      watch:
+        # Nếu sửa code Java thì mới rebuild lại toàn bộ
+        - action: rebuild
+          path: src/main/java
+        
+        # Nếu sửa HTML/CSS thì chỉ đồng bộ file (cực nhanh)
+        - action: sync
+          path: src/main/resources/templates
+          target: /build/target/extracted/application/templates
+        - action: sync
+          path: src/main/resources/static
+          target: /build/target/extracted/application/static
+
+  mysql:
+    image: mysql:8.0
+    # platform: linux/x86_64
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=petclinic
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      # Lệnh kiểm tra MySQL: dùng mật khẩu 123456 dính liền sau -p
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p123456"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql-data:

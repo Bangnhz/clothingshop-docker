@@ -1,0 +1,63 @@
+package com.example.fashionshop;
+
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.validation.annotation.Validated;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class WebInfoValidationTests {
+
+    // 1. ĐỊNH NGHĨA CLASS CẤU HÌNH NGAY TRONG FILE TEST
+    @Validated
+    @ConfigurationProperties(prefix = "web.info")
+    @Getter
+    @Setter
+    public static class WebInfoProperties { // Sử dụng static class ở đây
+        @NotBlank(message = "Ten website khong duoc de trong")
+        @Pattern(regexp = "^[a-zA-Z0-9\\sÀ-ỹ]+$", message = "Ten website khong duoc chua ki tu dac biet")
+        private String name;
+    }
+
+    // 2. KHỞI TẠO BỘ CHẠY TEST GIẢ LẬP CONTEXT CHO CLASS TRÊN
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(WebInfoProperties.class));
+
+    /**
+     * TEST: Tên web hợp lệ -> Phải khởi động thành công (Pass - Xanh)
+     */
+    @Test
+    void whenWebNameIsNormal_thenContextShouldLoad() {
+        this.contextRunner
+                .withPropertyValues("web.info.name=Fashion Shop 2026")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(WebInfoProperties.class);
+                    assertThat(context.getBean(WebInfoProperties.class).getName()).isEqualTo("Fashion Shop 2026");
+                });
+    }
+
+    /**
+     * TEST: Tên web chứa kí tự lạ @&#* -> Phải bị chặn và báo lỗi (Pass - Xanh)
+     */
+    @Test
+    void whenWebNameHasSpecialChars_thenContextShouldFailToStart() {
+        this.contextRunner
+                .withPropertyValues(
+                        "web.info.name=Fashion@&#*Shop")
+                .run(context -> {
+
+                    assertThat(context.getStartupFailure())
+                            .isNotNull();
+
+                    assertThat(context.getStartupFailure())
+                            .hasRootCauseInstanceOf(
+                                    jakarta.validation.ConstraintViolationException.class);
+                });
+    }
+}

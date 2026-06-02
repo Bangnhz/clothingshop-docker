@@ -164,6 +164,7 @@ CREATE TABLE ratings (
 -- USERS
 INSERT INTO users (username,email,password,full_name,phone,role,status,created_at) VALUES
 ('admin','admin@gmail.com','123456','Admin','0900000001','ADMIN','ACTIVE',NOW()),
+('b','b@gmail.com','123','b','09323141','ADMIN','ACTIVE',NOW()),
 ('user1','user1@gmail.com','123456','Nguyen Van A','0900000002','CUSTOMER','ACTIVE',NOW()),
 ('user2','user2@gmail.com','123456','Nguyen Van B','0900000003','CUSTOMER','ACTIVE',NOW()),
 ('user3','user3@gmail.com','123456','Nguyen Van C','0900000004','CUSTOMER','ACTIVE',NOW()),
