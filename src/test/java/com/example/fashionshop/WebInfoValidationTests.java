@@ -60,7 +60,7 @@ class WebInfoValidationTests {
                 .withPropertyValues("web.info.title=FashionShop", "web.info.contactPhone=123") // Sai định dạng Pattern
                 .run(context -> {
                     // Khẳng định ngữ cảnh Spring Context bị lỗi và không thể khởi chạy thành công
-                    assertThat(context).failed();
+                    assertThat(context).hasFailed();
                 });
     }
 }
