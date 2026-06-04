@@ -15,7 +15,7 @@ CREATE TABLE users (
     role VARCHAR(50) DEFAULT 'customer',
     discount_percent DECIMAL(5,2) DEFAULT 0,
     status VARCHAR(50) DEFAULT 'active',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -43,7 +43,7 @@ CREATE TABLE products (
     name VARCHAR(255),
     description TEXT,
     price DECIMAL(12,2),
-    created_at DATETIME,
+    created_at TIMESTAMP,
     category_id INT,
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
@@ -90,7 +90,7 @@ CREATE TABLE addresses (
 CREATE TABLE carts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     total_price DECIMAL(12,2) DEFAULT 0,
-    created_at DATETIME,
+    created_at TIMESTAMP,
     user_id INT UNIQUE,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -124,7 +124,7 @@ CREATE TABLE orders (
     order_status VARCHAR(50) DEFAULT 'PENDING',
     payment_method VARCHAR(50),
     payment_status VARCHAR(50) DEFAULT 'PENDING',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -137,7 +137,7 @@ CREATE TABLE order_items (
     quantity INT,
     order_id INT,
     product_variant_id INT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_variant_id) REFERENCES product_variants(id)
 );
@@ -149,7 +149,7 @@ CREATE TABLE ratings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     star INT CHECK (star BETWEEN 1 AND 5),
     comment TEXT,
-    created_at DATETIME,
+    created_at TIMESTAMP,
     user_id INT,
     product_id INT,
     UNIQUE (user_id, product_id),
