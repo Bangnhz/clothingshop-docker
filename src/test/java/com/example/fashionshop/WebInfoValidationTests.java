@@ -15,71 +15,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class WebInfoValidationTests {
 
-    // 1. ĐỊNH NGHĨA CLASS CẤU HÌNH ĐẦY ĐỦ ANNOTATION TRONG FILE TEST
-    @Configuration
-    @Validated
-    @ConfigurationProperties(prefix = "web.info")
-    @Getter
-    @Setter
-    public static class WebInfoProperties {
-        @NotBlank(message = "Ten website khong duoc de trong")
-        @Pattern(regexp = "^[a-zA-Z0-9\\sÀ-ỹ]+$", message = "Ten website khong duoc chua ki tu dac biet")
-        private String name;
-    }
-
-    // Cấu hình một môi trường kiểm thử ảo nạp trực tiếp tính năng ConfigurationProperties
-    @Configuration
-    @EnableConfigurationProperties(WebInfoProperties.class)
-    static class TestConfig {}
-
-    // 2. KHỞI TẠO BỘ CHẠY ĐỂ KHÔNG BỊ NULL KHI BIND DỮ LIỆU
+    // 1. Sử dụng ApplicationContextRunner để giả lập môi trường chạy ngầm của Spring
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withUserConfiguration(TestConfig.class);
 
-    /**
-     * TEST: Tên web hợp lệ -> Phải khởi động thành công (Pass - Xanh)
-     */
+    // 2. Định nghĩa một Class cấu hình giả lập nhận thông tin từ file properties công cộng
+    @Getter
+    @Setter
+    @Validated
+    @ConfigurationProperties(prefix = "web.info")
+    public static class WebInfoProperties {
+
+        @NotBlank(message = "Tên trang web không được để trống")
+        private String title;
+
+        @NotBlank(message = "Số điện thoại hỗ trợ không được để trống")
+        @Pattern(regexp = "^[0-9]{10}$", message = "Số điện thoại phải chứa đúng 10 chữ số")
+        private String contactPhone;
+    }
+
+    // 3. Kích hoạt lớp thuộc tính cấu hình trong ngữ cảnh Test
+    @Configuration
+    @EnableConfigurationProperties(WebInfoProperties.class)
+    public static class TestConfig {
+    }
+
+    // 4. KỊCH BẢN TEST 1: Khi điền đầy đủ và đúng định dạng -> Ứng dụng phải khởi tạo thành công Bean
     @Test
-    void whenWebNameIsNormal_thenContextShouldLoad() {
+    void testConfig_WhenDataIsValid_ShouldInitializeBean() {
         this.contextRunner
-                .withPropertyValues("web.info.name=Fashion Shop 2026")
+                .withPropertyValues("web.info.title=FashionShop", "web.info.contactPhone=0987654321")
                 .run(context -> {
+                    // Khẳng định Spring Context nạp thành công và chứa Bean cấu hình này
                     assertThat(context).hasSingleBean(WebInfoProperties.class);
-                    assertThat(context.getBean(WebInfoProperties.class).getName()).isEqualTo("Fashion Shop 2026");
+                    WebInfoProperties properties = context.getBean(WebInfoProperties.class);
+                    assertThat(properties.getTitle()).isEqualTo("FashionShop");
                 });
     }
 
-    /**
-     * TEST: Tên web chứa kí tự lạ @&#* -> Phải bị chặn và báo lỗi (Pass - Xanh)
-     */
-//     @Test
-//     void whenWebNameHasSpecialChars_thenContextShouldFailToStart() {
-//         this.contextRunner
-//                 .withPropertyValues("web.info.name=Fashion@&#*Shop")
-//                 .run(context -> {
-//                     // Khi nạp kí tự lạ, quá trình nạp cấu hình bắt buộc phải sinh ra lỗi StartupFailure
-//                     assertThat(context.getStartupFailure()).isNotNull();
-                    
-//                     // Xác nhận nguyên nhân chính xác là lỗi Validation hệ thống
-//                     assertThat(context.getStartupFailure())
-//                             .hasRootCauseInstanceOf(jakarta.validation.ConstraintViolationException.class);
-//                 });
-//     }
-/**
-     * TEST: Tên web chứa kí tự lạ @&#* -> Phải bị chặn và báo lỗi (Pass - Xanh)
-     */
-   /**
-     * TEST: Tên web chứa kí tự lạ @&#* -> Phải bị chặn và báo lỗi (Pass - Xanh)
-     */
-//     @Test
-//     void whenWebNameHasSpecialChars_thenContextShouldFailToStart() {
-//         this.contextRunner
-//                 .withPropertyValues("web.info.name=Fashion@&#*Shop") // Truyền kí tự lạ vào đây
-//                 .run(context -> {
-//                     // 1. Kiểm tra xem Context ảo của Spring có bị sập/lỗi đúng như kỳ vọng không
-//                     assertThat(context).getFailure()
-//                             .hasMessageContaining("Could not bind properties to 'WebInfoValidationTests.WebInfoProperties'")
-//                             .hasRootCauseInstanceOf(jakarta.validation.ConstraintViolationException.class);
-//                 });
-//     }
+    // 5. KỊCH BẢN TEST 2: Khi số điện thoại sai định dạng (thiếu số) -> Phải nổ lỗi và dừng ứng dụng
+    @Test
+    void testConfig_WhenPhoneIsInvalid_ShouldFailBinding() {
+        this.contextRunner
+                .withPropertyValues("web.info.title=FashionShop", "web.info.contactPhone=123") // Sai định dạng Pattern
+                .run(context -> {
+                    // Khẳng định ngữ cảnh Spring Context bị lỗi và không thể khởi chạy thành công
+                    assertThat(context).failed();
+                });
+    }
 }
