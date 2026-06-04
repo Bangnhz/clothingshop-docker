@@ -33,6 +33,16 @@ FROM package as extract
 WORKDIR /build
 RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
 
+# Giai đoạn Producton
+FROM extract as development
+WORKDIR /build
+COPY --from=extract /build/target/extracted/dependencies/. ./
+COPY --from=extract /build/target/extracted/spring-boot-loader/. ./
+COPY --from=extract /build/target/extracted/snapshot-dependencies/. ./
+COPY --from=extract /build/target/extracted/application/. ./
+ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000"
+CMD [ "java", "org.springframework.boot.loader.launch.JarLauncher" ]
+
 # Giai đoạn FINAL (Dành cho chạy thực tế trên Render)
 FROM eclipse-temurin:21-jre-jammy AS final
 WORKDIR /app
@@ -43,8 +53,7 @@ COPY --from=extract /build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract /build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract /build/target/extracted/application/ ./
 
-# 2. QUAN TRỌNG: Sao chép thư mục giao diện frontend vào trong Container chạy thực tế
-COPY frontend/ ./frontend/
+# COPY frontend/ ./frontend/
 
 EXPOSE 8080
 
