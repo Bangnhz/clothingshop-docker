@@ -40,26 +40,30 @@ public class ProductService {
             request.setPrice(product.getPrice());
             request.setDescription(product.getDescription());
             request.setPrice(product.getPrice());
+            request.setCategoryId(product.getCategory() != null ? product.getCategory().getId() : 0);
 
 
             List<ProductImageResponse> productImageResponses = new ArrayList<>();
-            for (ProductImage image : product.getImages()) {
-                ProductImageResponse productImageResponse = new ProductImageResponse();
-                productImageResponse.setImageUrl(image.getImageUrl());
-                productImageResponses.add(productImageResponse);
-
+            if (product.getImages() != null) {
+                for (ProductImage image : product.getImages()) {
+                    ProductImageResponse productImageResponse = new ProductImageResponse();
+                    productImageResponse.setImageUrl(image.getImageUrl());
+                    productImageResponses.add(productImageResponse);
+                }
             }
             List<ProductVariantResponse> productVariantResponses = new ArrayList<>();
-            for (ProductVariant variant : product.getVariants()) {
-                ProductVariantResponse productVariantResponse = new ProductVariantResponse();
-                productVariantResponse.setId(variant.getId());
-                Size size = variant.getSize();
-                SizeResponse sizeResponse = new SizeResponse();
-                sizeResponse.setName(size.getName());
+            if (product.getVariants() != null) {
+                for (ProductVariant variant : product.getVariants()) {
+                    ProductVariantResponse productVariantResponse = new ProductVariantResponse();
+                    productVariantResponse.setId(variant.getId());
+                    Size size = variant.getSize();
+                    SizeResponse sizeResponse = new SizeResponse();
+                    if (size != null) sizeResponse.setName(size.getName());
 
-                productVariantResponse.setSize(sizeResponse);
-                productVariantResponse.setStockQuantity(variant.getStockQuantity());
-                productVariantResponses.add(productVariantResponse);
+                    productVariantResponse.setSize(sizeResponse);
+                    productVariantResponse.setStockQuantity(variant.getStockQuantity());
+                    productVariantResponses.add(productVariantResponse);
+                }
             }
 
             request.setProductVariants(productVariantResponses);
@@ -79,25 +83,30 @@ public class ProductService {
         request.setName(product.getName());
         request.setPrice(product.getPrice());
         request.setDescription(product.getDescription());
+        request.setCategoryId(product.getCategory() != null ? product.getCategory().getId() : 0);
 
         List<ProductImageResponse> productImageResponses = new ArrayList<>();
-        for (ProductImage image : product.getImages()) {
-            ProductImageResponse productImageResponse = new ProductImageResponse();
-            productImageResponse.setImageUrl(image.getImageUrl());
-            productImageResponses.add(productImageResponse);
+        if (product.getImages() != null) {
+            for (ProductImage image : product.getImages()) {
+                ProductImageResponse productImageResponse = new ProductImageResponse();
+                productImageResponse.setImageUrl(image.getImageUrl());
+                productImageResponses.add(productImageResponse);
+            }
         }
 
         List<ProductVariantResponse> productVariantResponses = new ArrayList<>();
-        for (ProductVariant variant : product.getVariants()) {
-            ProductVariantResponse productVariantResponse = new ProductVariantResponse();
-            productVariantResponse.setId(variant.getId());
-            if (variant.getSize() != null) {
-                SizeResponse sizeResponse = new SizeResponse();
-                sizeResponse.setName(variant.getSize().getName());
-                productVariantResponse.setSize(sizeResponse);
+        if (product.getVariants() != null) {
+            for (ProductVariant variant : product.getVariants()) {
+                ProductVariantResponse productVariantResponse = new ProductVariantResponse();
+                productVariantResponse.setId(variant.getId());
+                if (variant.getSize() != null) {
+                    SizeResponse sizeResponse = new SizeResponse();
+                    sizeResponse.setName(variant.getSize().getName());
+                    productVariantResponse.setSize(sizeResponse);
+                }
+                productVariantResponse.setStockQuantity(variant.getStockQuantity());
+                productVariantResponses.add(productVariantResponse);
             }
-            productVariantResponse.setStockQuantity(variant.getStockQuantity());
-            productVariantResponses.add(productVariantResponse);
         }
 
         request.setProductVariants(productVariantResponses);
@@ -121,26 +130,32 @@ public class ProductService {
             request.setPrice(product.getPrice());
             request.setDescription(product.getDescription());
             request.setPrice(product.getPrice());
+            request.setCategoryId(product.getCategory() != null ? product.getCategory().getId() : 0);
 
 
             List<ProductImageResponse> productImageResponses = new ArrayList<>();
-            for (ProductImage image : product.getImages()) {
-                ProductImageResponse productImageResponse = new ProductImageResponse();
-                productImageResponse.setImageUrl(image.getImageUrl());
-                productImageResponses.add(productImageResponse);
+            if (product.getImages() != null) {
+                for (ProductImage image : product.getImages()) {
+                    ProductImageResponse productImageResponse = new ProductImageResponse();
+                    productImageResponse.setImageUrl(image.getImageUrl());
+                    productImageResponses.add(productImageResponse);
+
+                }
 
             }
             List<ProductVariantResponse> productVariantResponses = new ArrayList<>();
-            for (ProductVariant variant : product.getVariants()) {
-                ProductVariantResponse productVariantResponse = new ProductVariantResponse();
-                productVariantResponse.setId(variant.getId());
-                Size size = variant.getSize();
-                SizeResponse sizeResponse = new SizeResponse();
-                sizeResponse.setName(size.getName());
+            if (product.getVariants() != null) {
+                for (ProductVariant variant : product.getVariants()) {
+                    ProductVariantResponse productVariantResponse = new ProductVariantResponse();
+                    productVariantResponse.setId(variant.getId());
+                    Size size = variant.getSize();
+                    SizeResponse sizeResponse = new SizeResponse();
+                    if (size != null) sizeResponse.setName(size.getName());
 
-                productVariantResponse.setSize(sizeResponse);
-                productVariantResponse.setStockQuantity(variant.getStockQuantity());
-                productVariantResponses.add(productVariantResponse);
+                    productVariantResponse.setSize(sizeResponse);
+                    productVariantResponse.setStockQuantity(variant.getStockQuantity());
+                    productVariantResponses.add(productVariantResponse);
+                }
             }
 
             request.setProductVariants(productVariantResponses);

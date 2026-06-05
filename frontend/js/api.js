@@ -1,4 +1,10 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = (function() {
+    const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
+    if (host === 'localhost' || host === '127.0.0.1') {
+        return 'http://localhost:8080/api';
+    }
+    return '/api';
+})();
 
 /**
  * Handle fetch requests and automatic JSON parsing
